@@ -1,0 +1,90 @@
+Lua HTML Parser extension
+Lua HTML Parser 扩展
+
+Author: "tseesing" <chen-qx@live.cn>
+Date:   2015-12
+
+  将 html 模块解析得到的 Table 还原成 HTML 文档；查找特定元素。
+  原版 html 模块位于：https://github.com/luaforge/html
+作者是 T. Kobayashi
+  修改后的 html 模块位于：https://github.com/tseesing/html 
+  为能够正常还原出HTML文档、处理一些如注释的标签、对 buggy 网页
+的标签容错，本扩展需使用修改后的 html.lua。
+ 
+mhfilter.findSpecifiedTag(tagTable, tag, ...)
+mhfilter.getTagAllTable(html_table, tagname, ...)
+libmh.concatText(tagTable)
+libmh.tagTable2html(tagTable)
+
+* * * * * * * * * * * * * * *
+
+-----------
+mhfilter.findSpecifiedTag(tagTable, tagname, ...)
+  遍历 tagTable，找到名为 tagname, 并且属性 键-值 为 ... 的元
+素。 会深度优先遍历整个 tagTable，不会自行移动遍历位置，故用户
+需自行移动遍历位置。
+
+  参数：html_table 为 html 模块解析的 table 的或其中的一部分。
+      ：tagname 为元素名， 
+      ：... 变长参数，格式为：{attrName, attrValue[, true | false]}[, ...] 
+         其中 true | false 表示是否将 attrValue 作为 RE 的 Pattern 
+         默认是 false
+
+  返回结果：找到 table；否则为 nil
+
+  用法示例1，不使用RE式查找：
+ 
+    tmpTag = mhfilter.findSpecifiedTag(postTagTable, "div",
+            {"class", "thread-row openTitle"},
+            {"style", "width:auto;"}) 
+
+  用法示例2，使用RE式查找：
+    tmpTag = mhfilter.findSpecifiedTag(postTagTable, "a", 
+            {"href", "viewthread-.*#lastpost", true})
+
+-----------
+mhfilter.getTagAllTable(html_table, tagname, ...)
+  遍历 html_table，找到名为 tagname, 并且属性 键-值 为 ... 的元
+素。会深度优先遍历整个 table，会自行移动遍历位置。
+
+  参数：html_table 为 html 模块解析的 table 的或其中的一部分。
+      ：tagname 为元素名， 
+      ：... 变长参数，格式为：{attrName, attrValue}[, ...] 
+  返回结果为 closure。
+
+  用法示例：
+  
+    查找所有的元素："<DIV class=\"threadbit1\"  onMouseOver=\"this.className='threadbit3'\"  onMouseOut=\"this.className='threadbit1'\">"
+
+    for postTagTable in mhfilter.getTagAllTable(html_table, "DIV", 
+            {"class", "threadbit1"},  -- {attrK, attrV}
+            {"onMouseOver", "this.className='threadbit3'"}, 
+            {"onMouseOut", "this.className='threadbit1'"}) 
+    do
+        -- do something for "DIV" element
+    end
+
+-----------
+libmh.concatText(tagTable)
+  将元素所包含的文本内容取出。参数 tagTable 是 html 解析的 table
+结构或其中一部分的结构。
+  该函数遍历时会跳过 <SCRIPT> 元素之间的内容！即网页实际显示的内
+容（不包括格式）才会被输出。
+
+  参数：tagTable 为 html 模块解析的 table 的或其中的一部分。
+
+  如原先有元素：<a href="http://example.com/">here!</a>
+  返回结果: "here!"
+
+
+-----------
+libmh.tagTable2html(tagTable)
+  将 html 模块解析的 table 结构或该结构中的部分还原成 html 字符串，
+是 html.lua 的反向操作
+
+  参数：tagTable 为 html 模块解析的 table 的或其中的一部分。
+
+  如标签为：<a href="http://example.com/">here!</a>
+  返回结果: "<a href=\"http://example.com/\">here!</a>"
+
+
