@@ -30,7 +30,7 @@ mhfilter.findSpecifiedTag(tagTable, tagname, ...)
          其中 true | false 表示是否将 attrValue 作为 RE 的 Pattern 
          默认是 false
 
-  返回结果：找到 table；否则为 nil
+  返回结果：找到则为 table；否则为 nil
 
   用法示例1，不使用RE式查找：
  
@@ -68,8 +68,8 @@ mhfilter.getTagAllTable(html_table, tagname, ...)
 libmh.concatText(tagTable)
   将元素所包含的文本内容取出。参数 tagTable 是 html 解析的 table
 结构或其中一部分的结构。
-  该函数遍历时会跳过 <SCRIPT> 元素之间的内容！即网页实际显示的内
-容（不包括格式）才会被输出。
+  该函数遍历时会跳过 <SCRIPT> 元素之间的内容！即网页实际静态显示的
+内容（不包括格式）才会被输出。
 
   参数：tagTable 为 html 模块解析的 table 的或其中的一部分。
 
